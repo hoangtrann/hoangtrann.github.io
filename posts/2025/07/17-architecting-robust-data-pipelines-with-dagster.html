@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Architecting Robust Data Pipelines with Dagster - Hoang Tran</title>
-    
+
     <!-- SEO Meta Tags -->
     <meta name="description" content="A practical guide to building production-grade data pipelines with Dagster. From large-scale challenges to real-world integration patterns.">
     <meta name="keywords" content="Dagster, Data Engineering, Data Pipelines, Architecture, Best Practices, Python">
     <meta name="author" content="Hoang Tran">
-    
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://hoangtrann.github.io/posts/2025/07/17-architecting-robust-data-pipelines-with-dagster.html">
@@ -25,7 +25,7 @@
     <meta property="article:tag" content="Dagster">
     <meta property="article:tag" content="Data Engineering">
     <meta property="article:tag" content="Architecture">
-    
+
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@hoangtrann_">
@@ -35,16 +35,25 @@
     <meta name="twitter:image" content="https://hoangtrann.github.io/assets/images/2025_07_dagster-architecture-preview.png">
     <meta name="twitter:image:src" content="https://hoangtrann.github.io/assets/images/2025_07_dagster-architecture-preview.png">
     <meta name="twitter:image:alt" content="Architecting Robust Data Pipelines with Dagster - A practical guide from Hoang Tran">
-    
+
     <!-- Additional fallback for older Twitter crawlers -->
     <meta property="twitter:image" content="https://hoangtrann.github.io/assets/images/2025_07_dagster-architecture-preview.png">
-    
+
     <!-- Canonical URL -->
     <link rel="canonical" href="https://hoangtrann.github.io/posts/2025/07/17-architecting-robust-data-pipelines-with-dagster.html">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init Ie Ts Ms Ee Es Rs capture Ge calculateEventProperties Os register register_once register_for_session unregister unregister_for_session js getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Ds Fs createPersonProfile Ls Ps opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Cs debug I As getPageViewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+        posthog.init('phc_rNFGV6iipO6O6nIQydhou02E19t2nerZqP7hWSXMaph', {
+            api_host: 'https://us.i.posthog.com',
+            defaults: '2025-05-24',
+            person_profiles: 'always',
+        })
+    </script>
     <!-- Rose Pine theme will be handled in CSS -->
     <style>
         :root {
@@ -696,10 +705,6 @@ class PandasDatabaseIOManager(UPathIOManager):
         </div>
     </footer>
 
-    <script>
-        !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]);t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init identify register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on_feature_flags onFeatureFlags auth start_session_recording stop_session_recording session_recording_is_active capture pageview identify set_config startSurvey setSurveyCallback loadSurvey getActiveMatchingSurveys getSurveys getNextSurveyStep tryGetSurveyTargetingResults".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-        posthog.init('phc_jKrTczNp8V7pDXqsB1VbO8eGK8d4UXAGiUQQ2HjAtFQ',{api_host:'https://us.i.posthog.com', person_profiles: 'always'})
-    </script>
     <script>
         // Theme toggle functionality
         const themeToggle = document.getElementById('themeToggle');
