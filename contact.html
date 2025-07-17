@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Hoang Tran</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f0f4ff;
+            --bg-tertiary: #e1e9ff;
+            --text-primary: #0a0a0a;
+            --text-secondary: #4a5568;
+            --text-tertiary: #718096;
+            --accent: #00d4ff;
+            --accent-hover: #00b8e6;
+            --accent-glow: #00d4ff66;
+            --border: #d4e0ff;
+            --code-bg: #e1e9ff;
+            --shadow: rgba(0, 212, 255, 0.1);
+            --shadow-hover: rgba(0, 212, 255, 0.2);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111119;
+            --bg-tertiary: #1a1a24;
+            --text-primary: #f0f0ff;
+            --text-secondary: #a0a0c0;
+            --text-tertiary: #7070a0;
+            --accent: #00d4ff;
+            --accent-hover: #33e0ff;
+            --accent-glow: #00d4ff88;
+            --border: #2a2a3e;
+            --code-bg: #1a1a24;
+            --shadow: rgba(0, 212, 255, 0.2);
+            --shadow-hover: rgba(0, 212, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            text-shadow: 2px 2px 0px var(--accent-glow);
+            letter-spacing: 2px;
+            transition: all 0.2s;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+            text-shadow: 3px 3px 0px var(--accent-glow);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            padding: 80px 0 60px;
+            background-color: var(--bg-secondary);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .page-header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            text-shadow: 2px 2px 0px var(--accent-glow);
+            color: var(--text-primary);
+        }
+
+        .page-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Contact Content */
+        .contact-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 80px 0;
+        }
+
+        .contact-content p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        .contact-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .contact-card {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 32px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 var(--border), 0 6px 12px var(--shadow);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 0 var(--accent), 0 12px 24px var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .contact-card-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .contact-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .contact-card-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .contact-card-url {
+            font-size: 14px;
+            color: var(--accent);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        /* Social Links */
+        .social-section {
+            background-color: var(--bg-tertiary);
+            padding: 48px 32px;
+            text-align: center;
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 0 var(--border), 0 6px 12px var(--shadow);
+        }
+
+        .social-section h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .social-section p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            text-decoration: none;
+            border: 2px solid var(--text-tertiary);
+            font-weight: 500;
+            transition: all 0.2s;
+            box-shadow: 0 2px 0 var(--text-tertiary), 0 4px 8px var(--shadow);
+        }
+
+        .social-link:hover {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 #0099cc, 0 6px 12px var(--shadow-hover);
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 0;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-social-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-social-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-social-links a:hover {
+            color: var(--accent);
+        }
+
+        .copyright {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 36px;
+            }
+
+            .contact-content {
+                padding: 60px 0;
+            }
+
+            .contact-links {
+                grid-template-columns: 1fr;
+            }
+
+            .social-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .social-section {
+                padding: 32px 24px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">HT</a>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="/blog.html">Posts</a></li>
+                    <li><a href="/about.html">About</a></li>
+                    <li><a href="/contact.html">Contact</a></li>
+                </ul>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        <div class="container">
+            <h1>Get In Touch</h1>
+            <p class="page-subtitle">
+                Let's connect and discuss software development, technology, or potential collaborations
+            </p>
+        </div>
+    </div>
+
+    <main>
+        <section class="contact-content">
+            <div class="container">
+                <p>
+                    I'm always interested in connecting with fellow developers, discussing new ideas,
+                    collaborating on interesting projects, or just having a good conversation about technology.
+                    Feel free to reach out through any of these channels!
+                </p>
+
+                <div class="contact-links">
+                    <a href="mailto:thhoang.tr@gmail.com" class="contact-card">
+                        <span class="contact-card-icon">📧</span>
+                        <div class="contact-card-title">Email</div>
+                        <div class="contact-card-description">Best for detailed discussions</div>
+                        <div class="contact-card-url">thhoang.tr@gmail.com</div>
+                    </a>
+
+                    <a href="https://github.com/hoangtrann" class="contact-card" target="_blank" rel="noopener noreferrer">
+                        <span class="contact-card-icon">🐙</span>
+                        <div class="contact-card-title">GitHub</div>
+                        <div class="contact-card-description">Check out my code and projects</div>
+                        <div class="contact-card-url">github.com/hoangtrann</div>
+                    </a>
+
+                    <a href="https://www.linkedin.com/in/hoangtrann" class="contact-card" target="_blank" rel="noopener noreferrer">
+                        <span class="contact-card-icon">💼</span>
+                        <div class="contact-card-title">LinkedIn</div>
+                        <div class="contact-card-description">Professional networking</div>
+                        <div class="contact-card-url">linkedin.com/in/hoangtrann</div>
+                    </a>
+
+                    <a href="https://x.com/hoangtrann_" class="contact-card" target="_blank" rel="noopener noreferrer">
+                        <span class="contact-card-icon">🐦</span>
+                        <div class="contact-card-title">X (Twitter)</div>
+                        <div class="contact-card-description">Quick thoughts and updates</div>
+                        <div class="contact-card-url">@hoangtrann_</div>
+                    </a>
+                </div>
+
+                <div class="social-section">
+                    <h2>Let's Connect</h2>
+                    <p>
+                        I'm most active on these platforms and usually respond within a day or two.
+                        Don't hesitate to reach out - I love meeting new people in the tech community!
+                    </p>
+                    <div class="social-links">
+                        <a href="https://github.com/hoangtrann" class="social-link" target="_blank" rel="noopener noreferrer">
+                            <span>🐙</span>
+                            <span>GitHub</span>
+                        </a>
+                        <a href="https://www.linkedin.com/in/hoangtrann" class="social-link" target="_blank" rel="noopener noreferrer">
+                            <span>💼</span>
+                            <span>LinkedIn</span>
+                        </a>
+                        <a href="https://x.com/hoangtrann_" class="social-link" target="_blank" rel="noopener noreferrer">
+                            <span>🐦</span>
+                            <span>X</span>
+                        </a>
+                        <a href="mailto:thhoang.tr@gmail.com" class="social-link">
+                            <span>📧</span>
+                            <span>Email</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-social-links">
+                    <a href="https://github.com/hoangtrann">GitHub</a>
+                    <a href="https://www.linkedin.com/in/hoangtrann">LinkedIn</a>
+                    <a href="https://x.com/hoangtrann_">X</a>
+                    <a href="mailto:thhoang.tr@gmail.com">Email</a>
+                </div>
+                <p class="copyright">© 2025 Hoang Tran. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('.theme-icon');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+    </script>
+</body>
+</html>

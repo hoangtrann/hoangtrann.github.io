@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoang Tran - Software Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f0f4ff;
+            --bg-tertiary: #e1e9ff;
+            --text-primary: #0a0a0a;
+            --text-secondary: #4a5568;
+            --text-tertiary: #718096;
+            --accent: #00d4ff;
+            --accent-hover: #00b8e6;
+            --accent-glow: #00d4ff66;
+            --border: #d4e0ff;
+            --code-bg: #e1e9ff;
+            --shadow: rgba(0, 212, 255, 0.1);
+            --shadow-hover: rgba(0, 212, 255, 0.2);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111119;
+            --bg-tertiary: #1a1a24;
+            --text-primary: #f0f0ff;
+            --text-secondary: #a0a0c0;
+            --text-tertiary: #7070a0;
+            --accent: #00d4ff;
+            --accent-hover: #33e0ff;
+            --accent-glow: #00d4ff88;
+            --border: #2a2a3e;
+            --code-bg: #1a1a24;
+            --shadow: rgba(0, 212, 255, 0.2);
+            --shadow-hover: rgba(0, 212, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            text-shadow: 2px 2px 0px var(--accent-glow);
+            letter-spacing: 2px;
+            transition: all 0.2s;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+            text-shadow: 3px 3px 0px var(--accent-glow);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 120px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            text-shadow: 2px 2px 0px var(--accent-glow);
+        }
+
+        .hero .subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: #000;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 0 #0099cc, 0 6px 12px var(--shadow);
+            position: relative;
+            top: 0;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #0099cc, 0 8px 16px var(--shadow-hover);
+        }
+
+        .btn-primary:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #0099cc, 0 4px 8px var(--shadow);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-primary);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 0 #0099cc, 0 6px 12px var(--shadow);
+            position: relative;
+            top: 0;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--accent);
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #0099cc, 0 8px 16px var(--shadow-hover);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--border), 0 4px 8px var(--shadow);
+        }
+
+        /* Posts Section */
+        .posts-section {
+            padding: 80px 0;
+            background-color: var(--bg-secondary);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .view-all {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .view-all:hover {
+            text-decoration: none;
+            color: var(--accent-hover);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .post-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            padding: 32px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: block;
+        }
+
+        .post-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px var(--shadow-hover);
+            border-color: var(--accent);
+            border-width: 2px;
+        }
+
+        .post-date {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+        }
+
+        .post-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .post-excerpt {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .post-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 12px;
+            padding: 4px 12px;
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 80px 0;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .about-content h2 {
+            font-size: 32px;
+            margin-bottom: 24px;
+        }
+
+        .about-content p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+
+        .skills {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .skill-badge {
+            padding: 8px 16px;
+            background-color: var(--bg-primary);
+            border: 2px solid var(--text-tertiary);
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 0 var(--text-tertiary), 0 4px 8px var(--shadow);
+            position: relative;
+        }
+
+        .skill-badge:hover {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 #0099cc, 0 6px 12px var(--shadow-hover);
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 0;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .social-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .social-links a:hover {
+            color: var(--accent);
+        }
+
+        .copyright {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero .subtitle {
+                font-size: 18px;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">HT</a>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="/blog.html">Posts</a></li>
+                    <li><a href="/about.html">About</a></li>
+                    <li><a href="/contact.html">Contact</a></li>
+                </ul>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Hello, I'm Hoang "Ryan" Tran</h1>
+                <p class="subtitle">
+                    Software developer passionate about building elegant solutions, sharing knowledge, and software development principles
+                </p>
+                <div class="cta-buttons">
+                    <a href="#posts" class="btn btn-primary">Read Blog Posts</a>
+                    <a href="#about" class="btn btn-secondary">Learn More</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="posts-section" id="posts">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Latest Posts</h2>
+                    <a href="/blog.html" class="view-all">View all posts →</a>
+                </div>
+                <div class="posts-grid">
+                    <a href="/blog/2025/01/17-architecting-robust-data-pipelines-with-dagster.html" class="post-card">
+                        <div class="post-date">January 17, 2025</div>
+                        <h3 class="post-title">Architecting Robust Data Pipelines with Dagster</h3>
+                        <p class="post-excerpt">
+                            From large-scale challenges to real-world integration patterns. A practical guide
+                            to building production-grade data pipelines with Dagster.
+                        </p>
+                        <div class="post-tags">
+                            <span class="tag">Data Engineering</span>
+                            <span class="tag">Dagster</span>
+                            <span class="tag">Architecture</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section" id="about">
+            <div class="container">
+                <div class="about-content">
+                    <h2>About Me</h2>
+                    <p>
+                        I'm a software developer with a passion for creating clean, efficient, and maintainable code.
+                        I believe in the power of sharing knowledge and continuous learning. Through this blog,
+                        I share my experiences, insights, and lessons learned from building software systems.
+                    </p>
+                    <p>
+                        My areas of interest include software architecture, development best practices,
+                        team collaboration, and emerging technologies. When I'm not coding, you'll find me
+                        exploring new programming paradigms or contributing to open-source projects.
+                    </p>
+                    <div class="skills">
+                        <span class="skill-badge">AI</span>
+                        <span class="skill-badge">Software Development</span>
+                        <span class="skill-badge">Python</span>
+                        <span class="skill-badge">ERP</span>
+                        <span class="skill-badge">System Design</span>
+                        <span class="skill-badge">Cloud Architecture</span>
+                        <span class="skill-badge">DevOps</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="social-links">
+                    <a href="https://github.com/hoangtrann">GitHub</a>
+                    <a href="https://linkedin.com/in/hoangtrann">LinkedIn</a>
+                    <a href="https://x.com/hoangtrann_">X</a>
+                    <a href="mailto:thhoang.tr@gmail.com">Email</a>
+                </div>
+                <p class="copyright">© 2025 Hoang Tran. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('.theme-icon');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

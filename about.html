@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Hoang Tran</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f0f4ff;
+            --bg-tertiary: #e1e9ff;
+            --text-primary: #0a0a0a;
+            --text-secondary: #4a5568;
+            --text-tertiary: #718096;
+            --accent: #00d4ff;
+            --accent-hover: #00b8e6;
+            --accent-glow: #00d4ff66;
+            --border: #d4e0ff;
+            --code-bg: #e1e9ff;
+            --shadow: rgba(0, 212, 255, 0.1);
+            --shadow-hover: rgba(0, 212, 255, 0.2);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111119;
+            --bg-tertiary: #1a1a24;
+            --text-primary: #f0f0ff;
+            --text-secondary: #a0a0c0;
+            --text-tertiary: #7070a0;
+            --accent: #00d4ff;
+            --accent-hover: #33e0ff;
+            --accent-glow: #00d4ff88;
+            --border: #2a2a3e;
+            --code-bg: #1a1a24;
+            --shadow: rgba(0, 212, 255, 0.2);
+            --shadow-hover: rgba(0, 212, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            text-shadow: 2px 2px 0px var(--accent-glow);
+            letter-spacing: 2px;
+            transition: all 0.2s;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+            text-shadow: 3px 3px 0px var(--accent-glow);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            padding: 80px 0 60px;
+            background-color: var(--bg-secondary);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .page-header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            text-shadow: 2px 2px 0px var(--accent-glow);
+            color: var(--text-primary);
+        }
+
+        .page-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* About Content */
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 80px 0;
+        }
+
+        .about-content h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: var(--text-primary);
+            text-shadow: 1px 1px 0px var(--accent-glow);
+        }
+
+        .about-content p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+
+        .skills {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 48px;
+        }
+
+        .skill-badge {
+            padding: 8px 16px;
+            background-color: var(--bg-primary);
+            border: 2px solid var(--text-tertiary);
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 0 var(--text-tertiary), 0 4px 8px var(--shadow);
+            position: relative;
+        }
+
+        .skill-badge:hover {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 #0099cc, 0 6px 12px var(--shadow-hover);
+        }
+
+        .experience-section {
+            background-color: var(--bg-secondary);
+            padding: 48px 40px;
+            border: 2px solid var(--border);
+            margin-bottom: 48px;
+            box-shadow: 0 4px 0 var(--border), 0 6px 12px var(--shadow);
+        }
+
+        .experience-section h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .experience-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .experience-section li {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .experience-section li:before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 0;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .social-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .social-links a:hover {
+            color: var(--accent);
+        }
+
+        .copyright {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 36px;
+            }
+
+            .about-content {
+                padding: 60px 0;
+            }
+
+            .experience-section {
+                padding: 32px 24px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">HT</a>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="/blog.html">Posts</a></li>
+                    <li><a href="/about.html">About</a></li>
+                    <li><a href="/contact.html">Contact</a></li>
+                </ul>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        <div class="container">
+            <h1>About Me</h1>
+            <p class="page-subtitle">
+                Software developer passionate about clean code, system design, and continuous learning
+            </p>
+        </div>
+    </div>
+
+    <main>
+        <section class="about-content">
+            <div class="container">
+                <p>
+                    I'm a software developer with a passion for creating clean, efficient, and maintainable code.
+                    I believe in the power of sharing knowledge and continuous learning. Through this blog,
+                    I share my experiences, insights, and lessons learned from building software systems.
+                </p>
+
+                <p>
+                    My areas of interest include software architecture, development best practices,
+                    team collaboration, and emerging technologies. When I'm not coding, you'll find me
+                    exploring new programming paradigms or contributing to open-source projects.
+                </p>
+
+                <h2>Technical Skills</h2>
+                <div class="skills">
+                    <span class="skill-badge">AI</span>
+                    <span class="skill-badge">Software Development</span>
+                    <span class="skill-badge">Python</span>
+                    <span class="skill-badge">ERP</span>
+                    <span class="skill-badge">System Design</span>
+                    <span class="skill-badge">Cloud Architecture</span>
+                    <span class="skill-badge">DevOps</span>
+                </div>
+
+                <div class="experience-section">
+                    <h3>What I Focus On</h3>
+                    <ul>
+                        <li>Building scalable and maintainable software systems</li>
+                        <li>Implementing clean code practices and architectural patterns</li>
+                        <li>Data engineering and pipeline orchestration</li>
+                        <li>Cloud infrastructure and deployment strategies</li>
+                        <li>Team collaboration and knowledge sharing</li>
+                        <li>Continuous learning and staying current with technology trends</li>
+                    </ul>
+                </div>
+
+                <div class="experience-section">
+                    <h3>My Philosophy</h3>
+                    <ul>
+                        <li>Code should be written for humans to read, not just computers to execute</li>
+                        <li>Simple solutions are often better than complex ones</li>
+                        <li>Testing is not optional - it's an integral part of development</li>
+                        <li>Documentation is a form of communication, not just a requirement</li>
+                        <li>Learning never stops - technology evolves, and so should we</li>
+                    </ul>
+                </div>
+
+                <p>
+                    I'm always interested in connecting with fellow developers, discussing new ideas,
+                    and collaborating on interesting projects. Feel free to reach out through any of
+                    the channels listed in my contact information.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="social-links">
+                    <a href="https://github.com/hoangtrann">GitHub</a>
+                    <a href="https://www.linkedin.com/in/hoangtrann">LinkedIn</a>
+                    <a href="https://x.com/hoangtrann_">X</a>
+                    <a href="mailto:thhoang.tr@gmail.com">Email</a>
+                </div>
+                <p class="copyright">© 2025 Hoang Tran. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('.theme-icon');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+    </script>
+</body>
+</html>

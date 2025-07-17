@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecting Robust Data Pipelines with Dagster - Hoang Tran</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Rose Pine theme will be handled in CSS -->
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f0f4ff;
+            --bg-tertiary: #e1e9ff;
+            --text-primary: #0a0a0a;
+            --text-secondary: #4a5568;
+            --text-tertiary: #718096;
+            --accent: #00d4ff;
+            --accent-hover: #00b8e6;
+            --accent-glow: #00d4ff66;
+            --border: #d4e0ff;
+            --code-bg: #e1e9ff;
+            --shadow: rgba(0, 212, 255, 0.1);
+            --shadow-hover: rgba(0, 212, 255, 0.2);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111119;
+            --bg-tertiary: #1a1a24;
+            --text-primary: #f0f0ff;
+            --text-secondary: #a0a0c0;
+            --text-tertiary: #7070a0;
+            --accent: #00d4ff;
+            --accent-hover: #33e0ff;
+            --accent-glow: #00d4ff88;
+            --border: #2a2a3e;
+            --code-bg: #1a1a24;
+            --shadow: rgba(0, 212, 255, 0.2);
+            --shadow-hover: rgba(0, 212, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .article-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            text-shadow: 2px 2px 0px var(--accent-glow);
+            letter-spacing: 2px;
+            transition: all 0.2s;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+            text-shadow: 3px 3px 0px var(--accent-glow);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        /* Article Header */
+        .article-header {
+            text-align: center;
+            padding: 80px 0 60px;
+            background-color: var(--bg-secondary);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .article-header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            text-shadow: 2px 2px 0px var(--accent-glow);
+            color: var(--text-primary);
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-bottom: 20px;
+        }
+
+        .article-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Article Content */
+        article {
+            padding: 120px 0 60px;
+        }
+
+        article p:first-child {
+            margin-top: 40px;
+        }
+
+        article h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 48px 0 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--accent);
+            text-shadow: 1px 1px 0px var(--accent-glow);
+        }
+
+        article h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 32px 0 16px;
+        }
+
+        article p {
+            margin-bottom: 24px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        article a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        article a:hover {
+            color: var(--accent-hover);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        article strong {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        article code {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--code-bg);
+            color: var(--accent);
+            padding: 2px 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Better readability for light theme */
+        [data-theme="light"] article code {
+            color: #0066cc;
+        }
+
+        article pre {
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Prism.js theme overrides for arcade style */
+        pre[class*="language-"] {
+            font-family: 'Roboto Mono', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 0 var(--border), 0 6px 12px var(--shadow);
+            margin: 24px 0;
+            padding: 24px;
+        }
+
+        code[class*="language-"] {
+            font-family: 'Roboto Mono', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+        }
+
+        /* Rose Pine Dawn (Light Theme) */
+        [data-theme="light"] pre[class*="language-"] {
+            background-color: #faf4ed;
+            color: #575279;
+        }
+
+        [data-theme="light"] .token.comment,
+        [data-theme="light"] .token.prolog,
+        [data-theme="light"] .token.doctype,
+        [data-theme="light"] .token.cdata {
+            color: #9893a5;
+        }
+
+        [data-theme="light"] .token.punctuation {
+            color: #797593;
+        }
+
+        [data-theme="light"] .token.property,
+        [data-theme="light"] .token.tag,
+        [data-theme="light"] .token.boolean,
+        [data-theme="light"] .token.number,
+        [data-theme="light"] .token.constant,
+        [data-theme="light"] .token.symbol,
+        [data-theme="light"] .token.deleted {
+            color: #d7827e;
+        }
+
+        [data-theme="light"] .token.selector,
+        [data-theme="light"] .token.attr-name,
+        [data-theme="light"] .token.string,
+        [data-theme="light"] .token.char,
+        [data-theme="light"] .token.builtin,
+        [data-theme="light"] .token.inserted {
+            color: #56949f;
+        }
+
+        [data-theme="light"] .token.operator,
+        [data-theme="light"] .token.entity,
+        [data-theme="light"] .token.url,
+        [data-theme="light"] .language-css .token.string,
+        [data-theme="light"] .style .token.string {
+            color: #b4637a;
+        }
+
+        [data-theme="light"] .token.atrule,
+        [data-theme="light"] .token.attr-value,
+        [data-theme="light"] .token.keyword {
+            color: #907aa9;
+        }
+
+        [data-theme="light"] .token.function,
+        [data-theme="light"] .token.class-name {
+            color: #ea9d34;
+        }
+
+        /* Rose Pine Moon (Dark Theme) */
+        [data-theme="dark"] pre[class*="language-"] {
+            background-color: #232136;
+            color: #e0def4;
+        }
+
+        [data-theme="dark"] .token.comment,
+        [data-theme="dark"] .token.prolog,
+        [data-theme="dark"] .token.doctype,
+        [data-theme="dark"] .token.cdata {
+            color: #6e6a86;
+        }
+
+        [data-theme="dark"] .token.punctuation {
+            color: #908caa;
+        }
+
+        [data-theme="dark"] .token.property,
+        [data-theme="dark"] .token.tag,
+        [data-theme="dark"] .token.boolean,
+        [data-theme="dark"] .token.number,
+        [data-theme="dark"] .token.constant,
+        [data-theme="dark"] .token.symbol,
+        [data-theme="dark"] .token.deleted {
+            color: #eb6f92;
+        }
+
+        [data-theme="dark"] .token.selector,
+        [data-theme="dark"] .token.attr-name,
+        [data-theme="dark"] .token.string,
+        [data-theme="dark"] .token.char,
+        [data-theme="dark"] .token.builtin,
+        [data-theme="dark"] .token.inserted {
+            color: #9ccfd8;
+        }
+
+        [data-theme="dark"] .token.operator,
+        [data-theme="dark"] .token.entity,
+        [data-theme="dark"] .token.url,
+        [data-theme="dark"] .language-css .token.string,
+        [data-theme="dark"] .style .token.string {
+            color: #f6c177;
+        }
+
+        [data-theme="dark"] .token.atrule,
+        [data-theme="dark"] .token.attr-value,
+        [data-theme="dark"] .token.keyword {
+            color: #c4a7e7;
+        }
+
+        [data-theme="dark"] .token.function,
+        [data-theme="dark"] .token.class-name {
+            color: #f6c177;
+        }
+
+        article pre code {
+            font-family: 'Roboto Mono', monospace;
+            background-color: transparent;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        article blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 32px 0;
+            padding: 20px 24px;
+            background-color: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 16px;
+            box-shadow: 0 2px 0 var(--accent), 0 4px 8px var(--shadow);
+        }
+
+        article ul, article ol {
+            margin: 24px 0;
+            padding-left: 32px;
+        }
+
+        article li {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Tags */
+        .article-tags {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 60px;
+            padding-top: 24px;
+            padding-bottom: 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        .tag {
+            font-size: 12px;
+            padding: 4px 12px;
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 0;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .social-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .social-links a:hover {
+            color: var(--accent);
+        }
+
+        .copyright {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .article-header h1 {
+                font-size: 36px;
+            }
+
+            .article-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            article h2 {
+                font-size: 28px;
+            }
+
+            article h3 {
+                font-size: 20px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">HT</a>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="/blog.html">Posts</a></li>
+                    <li><a href="/about.html">About</a></li>
+                    <li><a href="/contact.html">Contact</a></li>
+                </ul>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="article-header">
+        <div class="article-container">
+            <div class="article-meta">
+                <span>January 17, 2025</span>
+                <span>•</span>
+                <span>10 min read</span>
+            </div>
+            <h1>Architecting Robust Data Pipelines with Dagster</h1>
+            <p class="article-subtitle">From large-scale challenges to real-world integration patterns</p>
+        </div>
+    </div>
+
+    <main>
+        <article class="article-container">
+            <p>Dagster is a modern, asset-centric data orchestrator that helps teams build, test, and operate reliable data pipelines. But moving from "hello world" to a production-grade architecture involves tackling common but complex challenges: handling massive datasets, managing integrations, and ensuring data integrity across systems.</p>
+            <p>This guide covers practical architectural patterns and recommended solutions for real-world scenarios encountered when using Dagster.</p>
+
+            <h2>1. The Core Philosophy: Don't Drown in Data</h2>
+            <p>The most common challenge is dealing with datasets that are too large to fit in memory. The fundamental principle in Dagster is that <strong>assets are metadata about a computation; the data itself should be handled by a dedicated storage layer.</strong></p>
+            <blockquote>
+                <strong>Problem:</strong> An asset function like <code>pd.read_csv("huge_file.csv")</code> will crash your process.
+            </blockquote>
+            <h3>Solution: IOManagers and Streaming</h3>
+            <ul>
+                <li><strong>Use IOManagers:</strong> An IOManager is a pluggable component that handles the physical storage of asset outputs and the loading of inputs. Instead of returning a massive DataFrame, your asset function can return nothing, and the IOManager takes care of writing the data to a database, data warehouse, or data lake.</li>
+                <li><strong>Process in Chunks:</strong> Your asset code should process data as a stream or in batches, never loading the entire dataset at once.</li>
+            </ul>
+            <pre><code class="language-python"># Conceptual IOManager for writing to a database
+class PandasDatabaseIOManager(UPathIOManager):
+    def handle_output(self, context, obj: pd.DataFrame):
+        # The IOManager handles writing in chunks, keeping
+        # the asset's memory footprint low.
+        obj.to_sql(
+            name=context.asset_key.path[-1],
+            con=self._engine,
+            if_exists="replace",
+            chunksize=10000,
+        )
+
+    def load_input(self, context) -> pd.DataFrame:
+        # Downstream assets can load data as a query.
+        table_name = context.upstream_output.asset_key.path[-1]
+        return pd.read_sql(f"SELECT * FROM {table_name}", self._engine)</code></pre>
+
+            <h2>2. Managing the Asset Lifecycle</h2>
+            <p>Once you have assets, you need to manage their entire lifecycle: viewing them, updating them, and handling failures.</p>
+
+            <h3>Viewing and Monitoring Assets</h3>
+            <p>You can't view a 100GB dataset in the UI. Instead, attach rich metadata to your asset materializations.</p>
+            <ul>
+                <li><strong>Best Practice:</strong> Use <code>AssetMaterialization</code> to yield metadata like row counts, data samples (e.g., <code>df.head().to_markdown()</code>), or <code>MetadataValue.url</code> to link to an external BI tool where the data can be fully explored.</li>
+            </ul>
+
+            <h3>Handling Data and Code Changes</h3>
+            <ul>
+                <li><strong>When Data Changes (New Records):</strong> Use <strong>partitions</strong>. Define your assets with a <code>partitions_def</code> (e.g., <code>DailyPartitionsDefinition</code>) to process data in logical, incremental chunks. This is the foundation for efficient, scalable pipelines.</li>
+                <li><strong>When Code Changes:</strong> Use the <code>code_version</code> argument in the <code>@asset</code> decorator. When you change an asset's logic, update its version string (<code>"1.1"</code> -> <code>"1.2"</code>). Dagit will automatically mark the asset as "stale," showing you exactly what needs to be re-materialized to be consistent with your latest code.</li>
+            </ul>
+
+            <h3>Error Handling and Retries</h3>
+            <ul>
+                <li><strong>Mid-Flight Retries (e.g., Flaky API calls):</strong> Handle this <em>inside</em> your asset code using a standard Python library like <code>tenacity</code>.</li>
+                <li><strong>Asset-Level Retries (When the whole asset fails):</strong> Use Dagster's built-in <code>RetryPolicy</code> on the <code>@asset</code> decorator to automatically re-run the entire asset on failure.</li>
+            </ul>
+
+            <h2>3. Building Resilient Pipelines: Validation and Recovery</h2>
+            <p>Robustness comes from both proactive validation and graceful recovery.</p>
+
+            <h3>Proactive Validation with Pydantic</h3>
+            <p>It is a highly recommended best practice to use Pydantic with Dagster. They are complementary:</p>
+            <ul>
+                <li><strong>Pydantic:</strong> Defines the "shape" and "rules" of your data (the contract).</li>
+                <li><strong>Pandas/Polars:</strong> Performs the "work" on that data (the transformation).</li>
+            </ul>
+            <p>Use Pydantic for:</p>
+            <ol>
+                <li><strong>Strongly-Typed Configuration:</strong> Define resource config with a Pydantic model for auto-complete and validation.</li>
+                <li><strong>Data Contracts:</strong> Create a custom <code>DagsterType</code> backed by a Pydantic model to ensure data flowing between assets conforms to a specific schema.</li>
+            </ol>
+
+            <h3>Graceful Recovery from Partial Failures</h3>
+            <p>When a run fails, Dagster shines. If one asset in a large graph fails:</p>
+            <ul>
+                <li><strong>Successful assets</strong> are saved and finalized.</li>
+                <li><strong>The failing asset</strong> stops its path.</li>
+                <li><strong>Downstream assets</strong> are skipped.</li>
+                <li><strong>Independent assets</strong> are unaffected and run to completion.</li>
+            </ul>
+            <blockquote>
+                <strong>Best Practice:</strong> Don't re-run everything. In the Dagit UI, use the <strong>"Resume/Retry"</strong> feature on the failed run. Dagster will intelligently re-execute only the failed and skipped steps, loading the results of the successful steps from your IOManager.
+            </blockquote>
+
+            <h2>4. The Bigger Picture: Integrating with the Outside World</h2>
+            <p>Dagster is a "meta-orchestrator," designed to manage other tools and external data sources.</p>
+
+            <h3>Integrating with Connectors (Airbyte, Fivetran)</h3>
+            <p>Use the <code>dagster-airbyte</code> or <code>dagster-fivetran</code> libraries. The workflow is simple:</p>
+            <ol>
+                <li>Configure a connection in the external tool (e.g., Airbyte).</li>
+                <li>Add the corresponding <code>AirbyteResource</code> in Dagster.</li>
+                <li>Use <code>load_assets_from_airbyte_instance</code> to automatically generate Dagster assets that represent the Airbyte sync.</li>
+            </ol>
+            <p>When you materialize the resulting asset in Dagster, it triggers the Airbyte sync and waits for it to complete. This creates a unified lineage graph from the source system, through the ELT tool, and into your downstream transformations.</p>
+
+            <h3>Defining Lineage and Source Assets</h3>
+            <p>Lineage is the map of data flow, and Dagster builds it automatically.</p>
+            <ul>
+                <li><strong>Implicitly (Most Common):</strong> An asset <code>b(a)</code> depends on asset <code>a</code>. Dagster infers this from the function signature.</li>
+                <li><strong>Explicitly (<code>deps</code>):</strong> Use <code>@asset(deps=[a])</code> when there is a dependency but no data is passed (e.g., depending on a <code>SourceAsset</code>).</li>
+            </ul>
+            <p>A <code>SourceAsset</code> is a pointer to data produced outside of Dagster's control (e.g., a table populated by another team). It makes your lineage graph complete, providing a holistic view of your entire data ecosystem.</p>
+
+            <h2>5. The Migration Playbook: Initial Loads and Relational Data</h2>
+            <p>Two of the most challenging real-world tasks are historical data loads and maintaining foreign key relationships.</p>
+
+            <h3>Handling Large Initial Loads</h3>
+            <p>For sources like Shopify or NetSuite, pulling years of data at once will fail.</p>
+            <ul>
+                <li><strong>Connector Choice:</strong> Strongly prefer a pre-built connector (via Airbyte/Fivetran) over building your own. The vendor handles the immense complexity of API changes, rate limits, and pagination.</li>
+                <li><strong>Strategy:</strong> Use <strong>partitions</strong>. Define your asset with a <code>MonthlyPartitionsDefinition</code> or <code>DailyPartitionsDefinition</code>. Then, launch a <strong>partitioned backfill</strong> from the Dagit UI to fetch the data one chunk at a time. Once the backfill is complete, the same asset can be put on a daily schedule to handle incremental updates.</li>
+            </ul>
+
+            <h3>Maintaining Relational Integrity (ID Mapping)</h3>
+            <p>When migrating related data (e.g., customers and orders), you need to resolve foreign keys between the old and new systems.</p>
+            <blockquote>
+                <strong>Best Practice:</strong> Treat the ID mapping as a first-class data asset.
+            </blockquote>
+            <ol>
+                <li>Create a <code>loaded_customers_and_id_mapping</code> asset. This asset loads customers into the new system and returns a DataFrame of <code>(old_id, new_id)</code>.</li>
+                <li>Your <code>loaded_orders</code> asset then depends on this mapping asset. It performs a <code>join</code> to enrich the raw order data with the new <code>customer_id</code> before loading it.</li>
+                <li>The mapping asset is stored by an IOManager. Start with the default filesystem (Parquet files) and scale up to a dedicated database table if the mapping becomes too large to load into memory.</li>
+            </ol>
+            <p>By modeling these challenges as assets, Dagster turns complex, error-prone tasks into observable, testable, and recoverable components of a unified data platform.</p>
+
+            <div class="article-tags">
+                <span class="tag">Data Engineering</span>
+                <span class="tag">Dagster</span>
+                <span class="tag">Architecture</span>
+                <span class="tag">Best Practices</span>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="social-links">
+                    <a href="https://github.com/hoangtrann">GitHub</a>
+                    <a href="https://www.linkedin.com/in/hoangtrann">LinkedIn</a>
+                    <a href="https://x.com/hoangtrann_">X</a>
+                    <a href="mailto:thhoang.tr@gmail.com">Email</a>
+                </div>
+                <p class="copyright">© 2025 Hoang Tran. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('.theme-icon');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html>
