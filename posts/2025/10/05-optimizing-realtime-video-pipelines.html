@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Video Pipelines: Mastering I/O, Processing, and Latency - Hoang Tran</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Late-night lessons from building live streaming apps, AR filters, and lag-free video calls. Learn how I/O blocking, compute delays, and buffering affect your FPS.">
+    <meta name="keywords" content="Video Processing, Latency, Real-Time Video, FPS Optimization, I/O Blocking, Frame Buffering, WebRTC, Computer Vision">
+    <meta name="author" content="Hoang Tran">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://hoangtrann.github.io/posts/2025/10/05-optimizing-realtime-video-pipelines.html">
+    <meta property="og:title" content="Real-Time Video Pipelines: Mastering I/O, Processing, and Latency">
+    <meta property="og:description" content="Late-night lessons from building live streaming apps, AR filters, and lag-free video calls. Learn how I/O blocking, compute delays, and buffering affect your FPS.">
+    <meta property="og:image" content="https://hoangtrann.github.io/assets/images/2025_10_video-pipeline-preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Hoang Tran - Software Developer">
+    <meta property="article:author" content="Hoang Tran">
+    <meta property="article:published_time" content="2025-10-05T00:00:00Z">
+    <meta property="article:section" content="Engineering">
+    <meta property="article:tag" content="Video Processing">
+    <meta property="article:tag" content="Performance">
+    <meta property="article:tag" content="Real-Time Systems">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@hoangtrann_">
+    <meta name="twitter:creator" content="@hoangtrann_">
+    <meta name="twitter:title" content="Real-Time Video Pipelines: Mastering I/O, Processing, and Latency">
+    <meta name="twitter:description" content="Late-night lessons from building live streaming apps, AR filters, and lag-free video calls. Learn how I/O blocking, compute delays, and buffering affect your FPS.">
+    <meta name="twitter:image" content="https://hoangtrann.github.io/assets/images/2025_10_video-pipeline-preview.png">
+    <meta name="twitter:image:src" content="https://hoangtrann.github.io/assets/images/2025_10_video-pipeline-preview.png">
+    <meta name="twitter:image:alt" content="Real-Time Video Pipelines: I/O, Processing, and Latency - A practical guide from Hoang Tran">
+
+    <!-- Additional fallback for older Twitter crawlers -->
+    <meta property="twitter:image" content="https://hoangtrann.github.io/assets/images/2025_10_video-pipeline-preview.png">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://hoangtrann.github.io/posts/2025/10/05-optimizing-realtime-video-pipelines.html">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "Real-Time Video Pipelines: Mastering I/O, Processing, and Latency",
+      "description": "Late-night lessons from building live streaming apps, AR filters, and lag-free video calls. Learn how I/O blocking, compute delays, and buffering affect your FPS.",
+      "image": "https://hoangtrann.github.io/assets/images/2025_10_video-pipeline-preview.png",
+      "author": {
+        "@type": "Person",
+        "name": "Hoang Tran",
+        "url": "https://hoangtrann.github.io",
+        "sameAs": [
+          "https://github.com/hoangtrann",
+          "https://www.linkedin.com/in/hoangtrann",
+          "https://x.com/hoangtrann_"
+        ]
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Hoang Tran",
+        "url": "https://hoangtrann.github.io"
+      },
+      "datePublished": "2025-10-05T00:00:00Z",
+      "dateModified": "2025-10-05T00:00:00Z",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://hoangtrann.github.io/posts/2025/10/05-optimizing-realtime-video-pipelines.html"
+      },
+      "keywords": ["Video Processing", "Latency", "Real-Time Video", "FPS Optimization", "I/O Blocking", "Frame Buffering", "WebRTC"],
+      "articleSection": "Engineering",
+      "wordCount": 1800,
+      "inLanguage": "en-US"
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init Ie Ts Ms Ee Es Rs capture Ge calculateEventProperties Os register register_once register_for_session unregister unregister_for_session js getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Ds Fs createPersonProfile Ls Ps opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Cs debug I As getPageViewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+        posthog.init('phc_rNFGV6iipO6O6nIQydhou02E19t2nerZqP7hWSXMaph', {
+            api_host: 'https://us.i.posthog.com',
+            defaults: '2025-05-24',
+            person_profiles: 'always',
+        })
+    </script>
+    <!-- Rose Pine theme will be handled in CSS -->
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f0f4ff;
+            --bg-tertiary: #e1e9ff;
+            --text-primary: #0a0a0a;
+            --text-secondary: #4a5568;
+            --text-tertiary: #718096;
+            --accent: #00d4ff;
+            --accent-hover: #00b8e6;
+            --accent-glow: #00d4ff66;
+            --border: #d4e0ff;
+            --code-bg: #e1e9ff;
+            --shadow: rgba(0, 212, 255, 0.1);
+            --shadow-hover: rgba(0, 212, 255, 0.2);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111119;
+            --bg-tertiary: #1a1a24;
+            --text-primary: #f0f0ff;
+            --text-secondary: #a0a0c0;
+            --text-tertiary: #7070a0;
+            --accent: #00d4ff;
+            --accent-hover: #33e0ff;
+            --accent-glow: #00d4ff88;
+            --border: #2a2a3e;
+            --code-bg: #1a1a24;
+            --shadow: rgba(0, 212, 255, 0.2);
+            --shadow-hover: rgba(0, 212, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .article-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            text-shadow: 2px 2px 0px var(--accent-glow);
+            letter-spacing: 2px;
+            transition: all 0.2s;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+            text-shadow: 3px 3px 0px var(--accent-glow);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        /* Article Header */
+        .article-header {
+            text-align: center;
+            padding: 80px 0 60px;
+            background-color: var(--bg-secondary);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .article-header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            text-shadow: 2px 2px 0px var(--accent-glow);
+            color: var(--text-primary);
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-bottom: 20px;
+        }
+
+        .article-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Article Content */
+        article {
+            padding: 120px 0 60px;
+        }
+
+        article p:first-child {
+            margin-top: 40px;
+        }
+
+        article h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 48px 0 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--accent);
+            text-shadow: 1px 1px 0px var(--accent-glow);
+        }
+
+        article h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 32px 0 16px;
+        }
+
+        article p {
+            margin-bottom: 24px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        article a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        article a:hover {
+            color: var(--accent-hover);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        article strong {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        article code {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--code-bg);
+            color: var(--accent);
+            padding: 2px 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Better readability for light theme */
+        [data-theme="light"] article code {
+            color: #0066cc;
+        }
+
+        article pre {
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Prism.js theme overrides for arcade style */
+        pre[class*="language-"] {
+            font-family: 'Roboto Mono', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 0 var(--border), 0 6px 12px var(--shadow);
+            margin: 24px 0;
+            padding: 24px;
+        }
+
+        code[class*="language-"] {
+            font-family: 'Roboto Mono', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+        }
+
+        /* Rose Pine Dawn (Light Theme) */
+        [data-theme="light"] pre[class*="language-"] {
+            background-color: #faf4ed;
+            color: #575279;
+        }
+
+        [data-theme="light"] .token.comment,
+        [data-theme="light"] .token.prolog,
+        [data-theme="light"] .token.doctype,
+        [data-theme="light"] .token.cdata {
+            color: #9893a5;
+        }
+
+        [data-theme="light"] .token.punctuation {
+            color: #797593;
+        }
+
+        [data-theme="light"] .token.property,
+        [data-theme="light"] .token.tag,
+        [data-theme="light"] .token.boolean,
+        [data-theme="light"] .token.number,
+        [data-theme="light"] .token.constant,
+        [data-theme="light"] .token.symbol,
+        [data-theme="light"] .token.deleted {
+            color: #d7827e;
+        }
+
+        [data-theme="light"] .token.selector,
+        [data-theme="light"] .token.attr-name,
+        [data-theme="light"] .token.string,
+        [data-theme="light"] .token.char,
+        [data-theme="light"] .token.builtin,
+        [data-theme="light"] .token.inserted {
+            color: #56949f;
+        }
+
+        [data-theme="light"] .token.operator,
+        [data-theme="light"] .token.entity,
+        [data-theme="light"] .token.url,
+        [data-theme="light"] .language-css .token.string,
+        [data-theme="light"] .style .token.string {
+            color: #b4637a;
+        }
+
+        [data-theme="light"] .token.atrule,
+        [data-theme="light"] .token.attr-value,
+        [data-theme="light"] .token.keyword {
+            color: #907aa9;
+        }
+
+        [data-theme="light"] .token.function,
+        [data-theme="light"] .token.class-name {
+            color: #ea9d34;
+        }
+
+        /* Rose Pine Moon (Dark Theme) */
+        [data-theme="dark"] pre[class*="language-"] {
+            background-color: #232136;
+            color: #e0def4;
+        }
+
+        [data-theme="dark"] .token.comment,
+        [data-theme="dark"] .token.prolog,
+        [data-theme="dark"] .token.doctype,
+        [data-theme="dark"] .token.cdata {
+            color: #6e6a86;
+        }
+
+        [data-theme="dark"] .token.punctuation {
+            color: #908caa;
+        }
+
+        [data-theme="dark"] .token.property,
+        [data-theme="dark"] .token.tag,
+        [data-theme="dark"] .token.boolean,
+        [data-theme="dark"] .token.number,
+        [data-theme="dark"] .token.constant,
+        [data-theme="dark"] .token.symbol,
+        [data-theme="dark"] .token.deleted {
+            color: #eb6f92;
+        }
+
+        [data-theme="dark"] .token.selector,
+        [data-theme="dark"] .token.attr-name,
+        [data-theme="dark"] .token.string,
+        [data-theme="dark"] .token.char,
+        [data-theme="dark"] .token.builtin,
+        [data-theme="dark"] .token.inserted {
+            color: #9ccfd8;
+        }
+
+        [data-theme="dark"] .token.operator,
+        [data-theme="dark"] .token.entity,
+        [data-theme="dark"] .token.url,
+        [data-theme="dark"] .language-css .token.string,
+        [data-theme="dark"] .style .token.string {
+            color: #f6c177;
+        }
+
+        [data-theme="dark"] .token.atrule,
+        [data-theme="dark"] .token.attr-value,
+        [data-theme="dark"] .token.keyword {
+            color: #c4a7e7;
+        }
+
+        [data-theme="dark"] .token.function,
+        [data-theme="dark"] .token.class-name {
+            color: #f6c177;
+        }
+
+        article pre code {
+            font-family: 'Roboto Mono', monospace;
+            background-color: transparent;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        article blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 32px 0;
+            padding: 20px 24px;
+            background-color: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 16px;
+            box-shadow: 0 2px 0 var(--accent), 0 4px 8px var(--shadow);
+        }
+
+        article ul, article ol {
+            margin: 24px 0;
+            padding-left: 32px;
+        }
+
+        article li {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Tags */
+        .article-tags {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 60px;
+            padding-top: 24px;
+            padding-bottom: 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        .tag {
+            font-size: 12px;
+            padding: 4px 12px;
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 0;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .social-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .social-links a:hover {
+            color: var(--accent);
+        }
+
+        .copyright {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .article-header h1 {
+                font-size: 36px;
+            }
+
+            .article-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            article h2 {
+                font-size: 28px;
+            }
+
+            article h3 {
+                font-size: 20px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">HT</a>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="/posts.html">Posts</a></li>
+                    <li><a href="/about.html">About</a></li>
+                    <li><a href="/contact.html">Contact</a></li>
+                </ul>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="article-header">
+        <div class="article-container">
+            <div class="article-meta">
+                <span>October 5, 2025</span>
+                <span>•</span>
+                <span>8 min read</span>
+            </div>
+            <h1>Real-Time Video Pipelines: Mastering I/O, Processing, and Latency</h1>
+            <p class="article-subtitle">Late-night lessons from building live streaming apps, AR filters, and lag-free video calls</p>
+        </div>
+    </div>
+
+    <main>
+        <article class="article-container">
+            <p>Hey folks, I'm a software engineer who's spent way too many late nights wrestling with real-time video pipelines—think live streaming apps, AR filters, and video calls that don't make you look like you're in a laggy time warp. Today, I want to dive into the nitty-gritty of how video frames go from your camera to the screen, and why things like I/O blocking, heavy processing, and clever buffering can make or break your FPS (frames per second). I'll break it down step by step, drawing from my own battles with these systems, and share some tips on optimizing them.</p>
+
+            <h2>Starting Simple: Raw Camera Input and the Output Dream</h2>
+            <p>Picture this: You've got a basic camera setup cranking out frames at 30 FPS—that's one frame every roughly 33 milliseconds. In a perfect world, the processor just grabs that frame, does nothing fancy, and spits it out to the display or stream at the same smooth 30 FPS.</p>
+
+            <p>But here's where reality bites. Even in this bare-bones setup, there's <strong>I/O blocking lurking in the shadows</strong>. Reading frames from the camera hardware and writing them to output isn't instantaneous—it involves syscalls, data copying, and sometimes waiting on hardware buffers. That tiny delay adds up, meaning your actual output FPS might dip below 30, especially if lighting sucks or the camera's sensor is finicky (low light often forces longer exposure times, slowing things down). From my experience, ignoring this in early prototypes leads to jittery video that frustrates users right out of the gate.</p>
+
+            <img src="../../../assets/images/2025_10_video-pipeline-overview.png" alt="Real-Time Video Pipeline Architecture" style="width: 100%; max-width: 800px; height: auto; margin: 48px auto; display: block; border: 2px solid var(--border); box-shadow: 0 8px 16px var(--shadow);">
+
+            <h2>Throwing in the Heavy Stuff: When Processing Tanks Your FPS</h2>
+            <p>Now, let's crank up the complexity. Say you're building something cool like a virtual background for video calls or a selfie filter with segmentation (separating you from the background) and effects. That frame doesn't just pass through anymore—it hits a processing gauntlet: segmentation algorithms (maybe using ML models like MediaPipe or custom CNNs), background swapping, selfie enhancements (smoothing skin, adding AR overlays), and finally compositing it all back together.</p>
+
+            <p>This is where <strong>compute delay rears its ugly head</strong>. If your processor (CPU, GPU, or even a dedicated NPU) takes, say, 50ms per frame, but frames are coming in every 33ms, you're screwed. The system backs up like traffic on a Friday afternoon. Output FPS plummets—I've seen it drop to 10-15 FPS in unoptimized code, making the video feel choppy and unresponsive. Plus, I/O blocking is still there, compounding the issue. Pro tip: Profile your pipeline with tools like NVIDIA Nsight or simple Python timers to spot bottlenecks. Often, it's not the ML inference itself but data transfers between CPU and GPU that kill you.</p>
+
+            <h2>The Hero We Need: Buffering to Smooth Things Out</h2>
+            <p>Alright, so how do we fix this mess without rewriting everything? Enter the <strong>frame buffer</strong>—a simple queue or ring buffer that decouples input/processing from output.</p>
+
+            <p>After processing, instead of rushing the frame straight to output, you stash it in the buffer. This lets the output pull frames at a steady rate, even if processing times fluctuate (e.g., due to varying scene complexity). In my projects, I've used OpenCV's VideoWriter with a custom thread-safe queue in Python, or Vulkan fences for GPU-side buffering in lower-level stuff.</p>
+
+            <h3>The wins:</h3>
+            <ul>
+                <li><strong>Consistency King:</strong> Buffers iron out spikes. If one frame takes extra time (maybe a big background change), the buffer keeps feeding the output smoothly, avoiding stutters.</li>
+                <li><strong>Decoupled Magic:</strong> Processing can chug along asynchronously. If it falls behind, frames pile up; if it catches up, the buffer empties. This is gold for multi-threaded designs—I've threaded capture, process, and render stages to boost throughput by 2x on consumer hardware.</li>
+                <li><strong>The Latency Trade-Off:</strong> Yeah, there's a catch. Frames chill in the buffer, adding end-to-end delay (think 100-200ms in a well-tuned system). For video conferencing, keep it under 150ms to avoid that awkward "are you there?" vibe. Measure it with timestamps on frames and adjust buffer size dynamically.</li>
+            </ul>
+
+            <p>In practice, with buffering, you might stabilize at 20-25 FPS output from a 30 FPS input—still a dip, but way more usable. Tune buffer depth based on your worst-case processing time; too small and you drop frames, too big and latency balloons.</p>
+
+            <h2>Wrapping Up: The Real-World Balance</h2>
+            <p>Nailing video pipelines is all about balancing quality, speed, and resources. Whether you're hacking on WebRTC for browsers or optimizing for mobile with Android's Camera2 API, always benchmark I/O, compute, and buffering. It's saved my bacon on deadlines more times than I can count. If you've got war stories or questions on implementing this in code, hit me up in the comments!</p>
+
+            <blockquote>
+                <strong>Key Takeaway:</strong> Real-time video is a dance between hardware constraints (I/O), computational limits (processing), and user experience (latency). Master the buffer, profile relentlessly, and remember—every millisecond counts when you've got 33ms to work with.
+            </blockquote>
+
+            <div class="article-tags">
+                <span class="tag">Video Processing</span>
+                <span class="tag">Performance</span>
+                <span class="tag">Real-Time Systems</span>
+                <span class="tag">Computer Vision</span>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="social-links">
+                    <a href="https://github.com/hoangtrann">GitHub</a>
+                    <a href="https://www.linkedin.com/in/hoangtrann">LinkedIn</a>
+                    <a href="https://x.com/hoangtrann_">X</a>
+                    <a href="mailto:thhoang.tr@gmail.com">Email</a>
+                </div>
+                <p class="copyright">© 2025 Hoang Tran. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('.theme-icon');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html>
